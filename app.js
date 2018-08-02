@@ -42,7 +42,7 @@ app.configure(function(){
 var appEnv = cfenv.getAppEnv();
 var weather_host = appEnv.services["weatherinsights"] 
         ? appEnv.services["weatherinsights"][0].credentials.url // Weather credentials passed in
-        : ""; // or copy your credentials url here for standalone
+        : "https://9ff1e179-6583-4627-84c3-901680e5f7f1:edTrhvzrkk@twcservice.mybluemix.net"; // or copy your credentials url here for standalone
 
 function weatherAPI(path, qs, done) {
     var url = weather_host + path;
@@ -73,6 +73,22 @@ function weatherAPI(path, qs, done) {
         }
     });
 }
+
+app.get('/api/forecast/alerts', function(req, res) {
+    var geocode = (req.query.geocode || "45.43,-75.68").split(",");
+    weatherAPI("/api/weather/v1/geocode/" + geocode[0] + "/" + geocode[1] + "/alerts.json", {
+        units: "m",
+        language: "en"
+    }, function(err, result) {
+        if (err) {
+        	console.log(err);
+            res.send(err).status(400);
+        } else {
+        	console.log("Weather Alerts");
+            res.json(result);
+        }
+    });
+});
 
 app.get('/api/forecast/daily', function(req, res) {
     var geocode = (req.query.geocode || "45.43,-75.68").split(",");
